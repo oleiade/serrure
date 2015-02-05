@@ -37,86 +37,99 @@ import (
 ### OpenPGP
 
 ```go
-    // First let's init an OpenPGPEncrypter.
-    // We let him know the path to our gnupg pubring file
-    // and a list of recipient (they must be present in your pubring)
-    // to the encryption; if you wanna be able to decrypt this message,
-    // you should be one of them...
-    ee, err := openpgp.NewOpenPGPEncrypter(
-        "/home/my/user/.gnupg/pubring.gpg",
-        []string{"AD4BF67", "B4E358F", "the@softwarehater.com"},
-    )
-    if err != nil {
-        log.Fatal(err)
-    }
+// First let's init an OpenPGPEncrypter.
+// We let him know the path to our gnupg pubring file
+// and a list of recipient (they must be present in your pubring)
+// to the encryption; if you wanna be able to decrypt this message,
+// you should be one of them...
+ee, err := openpgp.NewOpenPGPEncrypter(
+    "/home/my/user/.gnupg/pubring.gpg",
+    []string{"AD4BF67", "B4E358F", "the@softwarehater.com"},
+)
+if err != nil {
+    log.Fatal(err)
+}
 
-    // Let's encrypt a cool song lyrics using it
-    ed, err := ee.Encrypt([]byte("abc 123 easy as do re mi"))
-    if err != nil {
-        log.Fatal(err)
-    }
+// Let's encrypt a cool song lyrics using it
+ed, err := ee.Encrypt([]byte("abc 123 easy as do re mi"))
+if err != nil {
+    log.Fatal(err)
+}
 
-    // Now ed holds your encrypted bytes
-    fmt.Println(string(ed))
+// Now ed holds your encrypted bytes
+fmt.Println(string(ed))
 
-    // Thrust only what you see. Let's build a decrypter using
-    // using our gnupg secring file and the passphrase of the gpg key
-    // we want to use to later decrypt our message.
-    d, err := openpgp.NewOpenPGPDecrypter(
-        "/home/my/user/.gnupg/secring.gpg",
-        "My the@softwarehater.com private key's passphrase",
-    )
-    if err != nil {
-        log.Fatal(err)
-    }
+// Thrust only what you see. Let's build a decrypter using
+// using our gnupg secring file and the passphrase of the gpg key
+// we want to use to later decrypt our message.
+d, err := openpgp.NewOpenPGPDecrypter(
+    "/home/my/user/.gnupg/secring.gpg",
+    "My the@softwarehater.com private key's passphrase",
+)
+if err != nil {
+    log.Fatal(err)
+}
 
-    // And check that our recipients will acutally receive
-    // a Jackson5's song and not some horrible noise (I'm not pointing anyone)
-    pd, err := d.Decrypt(ed)
-    if err != nil {
-        log.Fatal(err)
-    }
+// And check that our recipients will acutally receive
+// a Jackson5's song and not some horrible noise (I'm not pointing anyone)
+pd, err := d.Decrypt(ed)
+if err != nil {
+    log.Fatal(err)
+}
 
-    // Now pd holds your decrypted data and should
-    // print down a Jackson5's song
-    fmt.Println(string(pd))
+// Now pd holds your decrypted data and should
+// print down a Jackson5's song
+fmt.Println(string(pd))
 ```
 
 ### AES256
 
 ```go
-    // First let's init an AES25Encrypter.
-    // It takes as input the passphrase you wanna encrypt
-    // your bytes with any salt you'd wanna apply to it (if not just provide nil)
-    enc, err := aes.NewAES256Encrypter("mot de passe?", nil)
-    if err != nil {
-        log.Fatal(err)
-    }
+// First let's init an AES25Encrypter.
+// It takes as input the passphrase you wanna encrypt
+// your bytes with any salt you'd wanna apply to it (if not just provide nil)
+enc, err := aes.NewAES256Encrypter("mot de passe?", nil)
+if err != nil {
+    log.Fatal(err)
+}
 
-    // Let's encrypt a good 80's song (yes, they're rare)
-    ed, err := enc.Encrypt([]byte("Sweet dreams are made of this. Who am I to disagree?"))
-    if err != nil {
-        log.Fatal(err)
-    }
+// Let's encrypt a good 80's song (yes, they're rare)
+ed, err := enc.Encrypt([]byte("Sweet dreams are made of this. Who am I to disagree?"))
+if err != nil {
+    log.Fatal(err)
+}
 
-    // Now ed holds your encrypted bytes
-    fmt.Println(string(ed))
+// Now ed holds your encrypted bytes
+fmt.Println(string(ed))
 
-    // Let's build a decrypter, providing it our passphrase
-    // So we are then able to decrypt our bytes
-    dec := aes.NewAES256Decrypter("mot de passe?")
-    if err != nil {
-        log.Fatal(err)
-    }
+// Let's build a decrypter, providing it our passphrase
+// So we are then able to decrypt our bytes
+dec := aes.NewAES256Decrypter("mot de passe?")
+if err != nil {
+    log.Fatal(err)
+}
 
-    // Let's ensure that it's still Eurythmics singing in there
-    pd, err := dec.Decrypt(ed)
-    if err != nil {
-        log.Fatal(err)
-    }
+// Let's ensure that it's still Eurythmics singing in there
+pd, err := dec.Decrypt(ed)
+if err != nil {
+    log.Fatal(err)
+}
 
-    // TADA
-    fmt.Println(string(pd))
+// TADA
+fmt.Println(string(pd))
+```
+
+## Add your own
+
+```go
+// All you have to do is to implement the Encrypter and Decrypter interfaces
+type Encrypter interface {
+    Encrypt([]byte) ([]byte, error)
+}
+
+type Decrypter interface {
+    Decrypt([]byte) ([]byte, error)
+}
 ```
 
 ## Contribute
