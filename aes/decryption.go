@@ -6,16 +6,23 @@ import (
 	"errors"
 )
 
+// AES256Decrypter implements the Decrypter interface.
+// Provided a Passphrase it exposes a Decrypt method to
+// read the content of AES256 encrypted bytes.
 type AES256Decrypter struct {
-	passphrase string
+	// Passphrase to be used to decrypt the AES256 ciphered blocks
+	Passphrase string
 }
 
+// Decrypt reads up the AES256 encrypted data bytes from ed,
+// decrypts them and returns the resulting plain data bytes as well
+// as any potential errors.
 func (a *AES256Decrypter) Decrypt(ed []byte) ([]byte, error) {
 	var aesKey *AES256Key
 	var ciphertext []byte
 	var err error
 
-	ciphertext, aesKey, err = parseMsg(a.passphrase, ed)
+	ciphertext, aesKey, err = parseMsg(a.Passphrase, ed)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +44,7 @@ func (a *AES256Decrypter) Decrypt(ed []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-// get ciphertext from message
+// extractMsg extracts ciphertext from message
 func extractMsg(ciphertext []byte) ([]byte, error) {
 	if len(ciphertext) < saltSize+aes.BlockSize {
 		return nil, errors.New("Ciphertext too short")
@@ -46,7 +53,7 @@ func extractMsg(ciphertext []byte) ([]byte, error) {
 	return ciphertext[saltSize:], nil
 }
 
-func parseMsg(passphrase string, msg []byte) ([]byte, *AES256Key, error) {
+func parseMsg(Passphrase string, msg []byte) ([]byte, *AES256Key, error) {
 	salt, err := ExtractSalt(msg)
 	if err != nil {
 		return nil, nil, err
@@ -57,7 +64,7 @@ func parseMsg(passphrase string, msg []byte) ([]byte, *AES256Key, error) {
 		return nil, nil, err
 	}
 
-	aeskey, err := MakeAES256Key(passphrase, salt)
+	aeskey, err := MakeAES256Key(Passphrase, salt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,8 +72,14 @@ func parseMsg(passphrase string, msg []byte) ([]byte, *AES256Key, error) {
 	return ciphertext, aeskey, nil
 }
 
+// NewAES256Decrypter builds a new AES256Decrypter object
+// from Passphrase. The returned object can then be used
+// against AES256 encrypted bytes using this Passphrase
+// using the Decrypt method.
+//
+// See Decrypter interface.
 func NewAES256Decrypter(p string) *AES256Decrypter {
 	return &AES256Decrypter{
-		passphrase: p,
+		Passphrase: p,
 	}
 }
