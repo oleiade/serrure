@@ -7,11 +7,11 @@ import (
 	"io"
 )
 
-const saltSize = 16
+const SALT_SIZE = 16
 
-// Securely generate a 8 byte salt
+// GenerateSalte securely generates a len(SALT_SIZE) byte salt
 func GenerateSalt() ([]byte, error) {
-	var salt []byte = make([]byte, saltSize)
+	var salt []byte = make([]byte, SALT_SIZE)
 
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
 		return nil, err
@@ -20,16 +20,16 @@ func GenerateSalt() ([]byte, error) {
 	return salt, nil
 }
 
-// helper functions to separate salt and message
+// ExtractSalt separates salt and ciphertext
 func ExtractSalt(ciphertext []byte) ([]byte, error) {
-	if len(ciphertext) < saltSize+aes.BlockSize { //replace these with actual values
+	if len(ciphertext) < SALT_SIZE+aes.BlockSize { //replace these with actual values
 		return nil, errors.New("Ciphertext too short")
 	}
 
-	return ciphertext[:saltSize], nil
+	return ciphertext[:SALT_SIZE], nil
 }
 
-// Prepend salt to the message
+// PrependSalt prepends salt to the ciphertext
 func PrependSalt(salt, ciphertext []byte) []byte {
 	var msg []byte = make([]byte, len(salt)+len(ciphertext))
 
