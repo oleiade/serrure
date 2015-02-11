@@ -19,6 +19,9 @@ type OpenPGPDecrypter struct {
 	passphrase string
 }
 
+// Decrypt reads up the openpgp encrypted data bytes from ed,
+// decrypts them and returns the resulting plain data bytes as well
+// as any potential errors.
 func (od *OpenPGPDecrypter) Decrypt(ed []byte) ([]byte, error) {
 	var armoredBlock *armor.Block
 	var message *openpgp.MessageDetails
@@ -71,6 +74,12 @@ func (od *OpenPGPDecrypter) Decrypt(ed []byte) ([]byte, error) {
 	return plain, err
 }
 
+// NewOpenPGPDecrypter builds a new OpenPGPDecrypter object
+// from a gnupg secring file path and a passphrase.
+// The returned object can then be used against OpenPGP
+// encrypted bytes using the Decrypt method.
+//
+// See Decrypter interface.
 func NewOpenPGPDecrypter(secRingPath string, passphrase string) (*OpenPGPDecrypter, error) {
 	var dk *openpgp.EntityList
 	var od *OpenPGPDecrypter

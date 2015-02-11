@@ -8,10 +8,16 @@ import (
 	"io"
 )
 
+// OpenPGPEncrypter implements the Encrypter interface.
+// Provided an *openpgp.EntityList object it exposes an Encrypt method to
+// encrypt provided plain bytes using OpenPGP algorithm.
 type OpenPGPEncrypter struct {
 	Keys *openpgp.EntityList
 }
 
+// Encrypt reads up plain data bytes contained in pd, encrypts
+// them using OpenPGP encryption algorithm, and returns the
+// resulting bytes as well as any potential errors.
 func (oe *OpenPGPEncrypter) Encrypt(pd []byte) ([]byte, error) {
 	var buffer *bytes.Buffer = &bytes.Buffer{}
 	var armoredWriter io.WriteCloser
@@ -53,6 +59,13 @@ func (oe *OpenPGPEncrypter) Encrypt(pd []byte) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
+// NewOpenPGPEncrypter builds a new OpenPGPEncrypter object
+// from provided gnupg pubring file path and a list of recipients.
+// The returned object can then be used against byte slices to encrypt
+// them with the OpenPGP encryption algorithm using
+// the Encrypt method.
+//
+// See Encrypter interface.
 func NewOpenPGPEncrypter(pubRingPath string, recipients []string) (*OpenPGPEncrypter, error) {
 	var ek *openpgp.EntityList
 	var oe *OpenPGPEncrypter
