@@ -45,7 +45,7 @@ func (a *AES256Encrypter) Encrypt(pd []byte) ([]byte, error) {
 // the Encrypt method.
 //
 // See Encrypter interface.
-func NewAES256Encrypter(Passphrase string, salt string) (*AES256Encrypter, error) {
+func NewAES256Encrypter(Passphrase string, salt []byte) (*AES256Encrypter, error) {
 	var k *AES256Key
 	var ae *AES256Encrypter
 	var err error
@@ -56,8 +56,7 @@ func NewAES256Encrypter(Passphrase string, salt string) (*AES256Encrypter, error
 	}
 
 	ae = &AES256Encrypter{
-		Key:        k,
-		Passphrase: Passphrase,
+		Key: k,
 	}
 
 	return ae, err

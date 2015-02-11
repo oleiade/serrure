@@ -46,11 +46,11 @@ func (a *AES256Decrypter) Decrypt(ed []byte) ([]byte, error) {
 
 // extractMsg extracts ciphertext from message
 func extractMsg(ciphertext []byte) ([]byte, error) {
-	if len(ciphertext) < saltSize+aes.BlockSize {
+	if len(ciphertext) < SALT_SIZE+aes.BlockSize {
 		return nil, errors.New("Ciphertext too short")
 	}
 
-	return ciphertext[saltSize:], nil
+	return ciphertext[SALT_SIZE:], nil
 }
 
 func parseMsg(Passphrase string, msg []byte) ([]byte, *AES256Key, error) {

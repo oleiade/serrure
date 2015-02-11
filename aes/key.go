@@ -25,7 +25,7 @@ func MakeAES256Key(passphrase string, salt []byte) (*AES256Key, error) {
 			return nil, err
 		}
 	} else {
-		if len(salt) != saltSize {
+		if len(salt) != SALT_SIZE {
 			return nil, errors.New("Salt is not the correct size")
 		}
 	}
