@@ -4,8 +4,57 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"errors"
 	"io"
+
+	"golang.org/x/crypto/blowfish"
+	"golang.org/x/crypto/twofish"
 )
+
+// General Purpose Key
+type SymmetricEncrypter struct {
+	Key  *Key
+	algo cryptoAlgo
+}
+
+// This can be changed to drop the key argument
+// but i will leave it for now
+func (a *SymmetricEncrypter) ChooseAlgo(key *Key) (cipher.Block, error) {
+	switch a.algo {
+	case AESNOMAC:
+		return aes.NewCipher(key.key)
+	case AESGCM:
+		return aes.NewCipher(key.key)
+	case BLOWFISHGCM:
+		return blowfish.NewCipher(key.key)
+	case TWOFISHGCM:
+		return twofish.NewCipher(key.key)
+	default:
+		return nil, errors.New("Did not understand the algo you chose")
+	}
+}
+
+// General Purpose Symmetric Encryption
+// Uses GCM mode of operation with message authentication
+func (a *SymmetricEncrypter) Encrypt(pd []byte) ([]byte, error) {
+	block, err := a.ChooseAlgo(a.Key) //aes.NewCipher(a.Key.key)
+	if err != nil {
+		return nil, err
+	}
+	ad, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	nonce := make([]byte, ad.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return nil, err
+	}
+
+	ciphertext := ad.Seal(nil, nonce, pd, nil)
+	ciphertext = PrependSalt(a.Key.salt, PrependSalt(nonce, ciphertext))
+	return ciphertext, nil
+}
 
 // AES256Encrypter implements the Encrypter interface.
 // Provided a AES256Key object it exposes a Encrypt method to
