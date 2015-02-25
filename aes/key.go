@@ -7,11 +7,9 @@ import (
 	"code.google.com/p/go.crypto/scrypt"
 )
 
-type AES256Key struct {
-	key  []byte
-	salt []byte
-}
-
+// General purpose key object
+// Renamed as it will be used for blowfish, twofish
+// and possibly other crypto algorithms
 type Key struct {
 	key  []byte
 	salt []byte
@@ -42,6 +40,11 @@ func MakeKey(passphrase string, salt []byte) (*Key, error) {
 
 func NewKey(key, salt []byte) *Key {
 	return &Key{key, salt}
+}
+
+type AES256Key struct {
+	key  []byte
+	salt []byte
 }
 
 // make an AES key. Pass nil as salt if you want to generate a new one
