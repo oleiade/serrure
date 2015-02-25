@@ -20,6 +20,10 @@ type SymmetricDecrypter struct {
 	algo       cryptoAlgo
 }
 
+func (sd *SymmetricDecrypter) SetAlgo(algo cryptoAlgo) {
+	sd.algo = algo
+}
+
 func NewSymmetricDecrypter(p string) *SymmetricDecrypter {
 	return &SymmetricDecrypter{
 		Passphrase: p,

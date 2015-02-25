@@ -82,13 +82,13 @@ if err != nil {
 fmt.Println(string(pd))
 ```
 
-### AES256
+### Symmetric Encryption
 
 ```go
-// First let's init an AES25Encrypter.
+// First let's init an SymmetricEncrypter.
 // It takes as input the passphrase you wanna encrypt
 // your bytes with any salt you'd wanna apply to it (if not just provide nil)
-enc, err := aes.NewAES256Encrypter("mot de passe?", nil)
+enc, err := aes.NewSymmetricEncrypter("mot de passe?", nil)
 if err != nil {
     log.Fatal(err)
 }
@@ -104,7 +104,7 @@ fmt.Println(string(ed))
 
 // Let's build a decrypter, providing it our passphrase
 // So we are then able to decrypt our bytes
-dec := aes.NewAES256Decrypter("mot de passe?")
+dec := aes.NewSymmetricDecrypter("mot de passe?")
 if err != nil {
     log.Fatal(err)
 }
@@ -118,6 +118,17 @@ if err != nil {
 // TADA
 fmt.Println(string(pd))
 ```
+
+The SymmetricEncrypter can use a variety of encryption algorithms, provided in algo.go. All use the GCM mode of operation, with the exception of the AESNOMAC 
+option, which uses AES256 in CFB mode with no message authentication. If you are using this, please think about switching to the default algorithm (AES256 in 
+GCM mode) or using one of the others. Here is the way you can use Twofish:
+
+After initializing a new Symmetric Encrypter:
+```go
+se,err := NewSymmetricEncryper("mot de passe?", nil)
+se.SetAlgo(TWOFISH)
+```
+Now you can now use it as usual. Encryptions and decryptions will use Twofish in GCM mode!
 
 ## Add your own
 

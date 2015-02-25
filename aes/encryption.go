@@ -14,6 +14,10 @@ type SymmetricEncrypter struct {
 	algo cryptoAlgo
 }
 
+func (sd *SymmetricEncrypter) SetAlgo(algo cryptoAlgo) {
+	sd.algo = algo
+}
+
 // General Purpose Symmetric Encryption
 // Uses GCM mode of operation with message authentication
 // Will provide fallback support for AESNOMAC (AES256 in CFB mode
