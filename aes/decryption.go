@@ -5,9 +5,6 @@ import (
 	"crypto/cipher"
 	"errors"
 	"log"
-
-	"golang.org/x/crypto/blowfish"
-	"golang.org/x/crypto/twofish"
 )
 
 // More generalized form of AES below, with GCM as the default
@@ -30,31 +27,15 @@ func NewSymmetricDecrypter(p string) *SymmetricDecrypter {
 	}
 }
 
-// This chooses the algo given a SymmetricDecrypter and
-// returns a cipher.Block object given key (passphrase)
-// YOU MUST PASS THE KEY INTO THIS ONE (unlike the SymmetricEncrypter
-// version) as you need the nonce and salt to actually create the key
-// and that is message dependent
-func (a *SymmetricDecrypter) ChooseAlgo(key *Key) (cipher.Block, error) {
-	switch a.algo {
-	case AESNOMAC:
-		return aes.NewCipher(key.key)
-	case AESGCM:
-		return aes.NewCipher(key.key)
-	case BLOWFISHGCM:
-		return blowfish.NewCipher(key.key)
-	case TWOFISHGCM:
-		return twofish.NewCipher(key.key)
-	default:
-		return nil, errors.New("Did not understand the algo you chose")
-	}
-}
-
 func (a *SymmetricDecrypter) Decrypt(ed []byte) ([]byte, error) {
 	var key *Key
 	var ciphertext []byte
 	var err error
 	ciphertext, key, err = parseMsgGeneric(a.Passphrase, ed)
+
+	// This is a special case for legacy support
+	// IT SHOULD NOT BE USED AT ALL. PLEASE DO NOT CONSIDER THIS SECURE
+	// Switch to GCM mode of operation, so messages can be authenticated
 	if a.algo == AESNOMAC {
 		log.Println("You are using non-authenticated encryption. This is insecure, and you should not be doing this. Please use an algo in GCM mode")
 		var key *Key
@@ -87,7 +68,7 @@ func (a *SymmetricDecrypter) Decrypt(ed []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	block, err := a.ChooseAlgo(key)
+	block, err := ChooseAlgo(key, a.algo)
 	if err != nil {
 		return nil, err
 	}
