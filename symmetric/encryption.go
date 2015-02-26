@@ -11,10 +11,10 @@ import (
 // General Purpose Key
 type SymmetricEncrypter struct {
 	Key  *Key
-	algo cryptoAlgo
+	algo int
 }
 
-func (sd *SymmetricEncrypter) SetAlgo(algo cryptoAlgo) {
+func (sd *SymmetricEncrypter) SetAlgo(algo int) {
 	sd.algo = algo
 }
 

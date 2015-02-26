@@ -42,3 +42,28 @@ func TestEncrypterDecrypter(t *testing.T) {
 	}
 
 }
+func TestEncrypterDecrypterTwofish(t *testing.T) {
+	se, err := NewSymmetricEncrypter(testPassphrase, nil)
+	if err != nil {
+		t.Errorf("err:", err)
+	}
+	se.SetAlgo(TWOFISHGCM)
+	ct, err := se.Encrypt(plainText)
+	sd := NewSymmetricDecrypter(testPassphrase)
+	sd.SetAlgo(TWOFISHGCM)
+	pt, err := sd.Decrypt(ct)
+	if err != nil {
+		t.Errorf("err:", err)
+	}
+	if bytes.Compare(pt, plainText) != 0 {
+		t.Errorf("Twofish: Encryption does not decrypt to the proper message")
+	}
+
+	// Message is tampered with, it MUST not authenticate
+	ct[2] = 0
+	pt, err = sd.Decrypt(ct)
+	if err.Error() != "cipher: message authentication failed" {
+		t.Errorf("Twofish: Message should not authenticate, it did")
+	}
+
+}

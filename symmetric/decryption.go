@@ -17,10 +17,10 @@ import (
 type SymmetricDecrypter struct {
 	// Passphrase to be used to decrypt the AES256 ciphered blocks
 	Passphrase string
-	algo       cryptoAlgo
+	algo       int
 }
 
-func (sd *SymmetricDecrypter) SetAlgo(algo cryptoAlgo) {
+func (sd *SymmetricDecrypter) SetAlgo(algo int) {
 	sd.algo = algo
 }
 
