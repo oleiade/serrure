@@ -52,7 +52,7 @@ func TestGCM(t *testing.T) {
 	if bytes.Compare(pt, secret) != 0 {
 		t.Errorf("Encryption/Decryption did not work properly")
 	}
-	ct[len(ct)-1] = 0
+	ct[len(ct)-1]++
 	pt, err = dc.Decrypt(ct)
 	if err == nil {
 		t.Errorf("Message should not authenticate, it did")
