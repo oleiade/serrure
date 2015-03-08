@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	GCM_MODE int = iota
-	CFB_MODE
+	GCM_MODE int = iota // GCM Mode of operation with message authentication
+	CFB_MODE            // CFB Mode of operation with *** NO MESSAGE AUTHENTICATIO ***
 )
 
 // AES256Encrypter implements the Encrypter interface.
@@ -22,6 +22,8 @@ type AES256Encrypter struct {
 	Mode int
 }
 
+// This method sets the mode of operation of the
+// AES256 Encrypter.
 func (a *AES256Encrypter) SetMode(mode int) {
 	a.Mode = mode
 }
@@ -39,7 +41,7 @@ func (a *AES256Encrypter) Encrypt(pd []byte) ([]byte, error) {
 	switch a.Mode {
 	case CFB_MODE:
 		{
-			log.Println("You are using non-authenticated encryption. This is insecure, and you should consider using this in GCM mode")
+			log.Println("You are using non-authenticated encryption. This is insecure, and you should consider switching to a mode with message authentication, such as GCM.")
 			if err != nil {
 				return nil, err
 			}
@@ -98,8 +100,8 @@ func NewAES256Encrypter(Passphrase string, salt []byte) (*AES256Encrypter, error
 	}
 
 	ae = &AES256Encrypter{
-		Key: k,
+		Key:  k,
+		Mode: GCM_MODE,
 	}
-	ae.SetMode(GCM_MODE)
 	return ae, err
 }

@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"errors"
+	"log"
 )
 
 // AES256Decrypter implements the Decrypter interface.
@@ -13,6 +14,12 @@ type AES256Decrypter struct {
 	// Passphrase to be used to decrypt the AES256 ciphered blocks
 	Passphrase string
 	Mode       int
+}
+
+// This method sets the mode of operation of the
+// AES256 Decrypter.
+func (a *AES256Decrypter) SetMode(mode int) {
+	a.Mode = mode
 }
 
 // Decrypt reads up the AES256 encrypted data bytes from ed,
@@ -39,6 +46,7 @@ func (a *AES256Decrypter) Decrypt(ed []byte) ([]byte, error) {
 	switch a.Mode {
 	case CFB_MODE:
 		{
+			log.Println("You are using non-authenticated encryption. This is insecure, and you should consider switching to a mode with message authentication, such as GCM.")
 			iv := ciphertext[:aes.BlockSize]
 			ciphertext = ciphertext[aes.BlockSize:]
 			stream := cipher.NewCFBDecrypter(block, iv)
@@ -105,5 +113,6 @@ func parseMsg(Passphrase string, msg []byte) ([]byte, *Key, error) {
 func NewAES256Decrypter(p string) *AES256Decrypter {
 	return &AES256Decrypter{
 		Passphrase: p,
+		Mode:       GCM_MODE,
 	}
 }
