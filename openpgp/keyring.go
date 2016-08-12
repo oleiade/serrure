@@ -1,10 +1,11 @@
 package openpgp
 
 import (
-	"code.google.com/p/go.crypto/openpgp"
 	"fmt"
 	"os"
 	"strings"
+
+	"golang.org/x/crypto/openpgp"
 )
 
 func ReadPubRing(path string, keyIds []string) (*openpgp.EntityList, error) {

@@ -4,7 +4,7 @@ import (
 	"crypto/aes"
 	"errors"
 
-	"code.google.com/p/go.crypto/scrypt"
+	"golang.org/x/crypto/scrypt"
 )
 
 type AES256Key struct {
