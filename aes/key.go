@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-type AES256Key struct {
+type Key struct {
 	key  []byte
 	salt []byte
 }
@@ -15,7 +15,7 @@ type AES256Key struct {
 // make an AES key. Pass nil as salt if you want to generate a new one
 // otherwise pass the salt from the message and you will get the key
 // will use scrypt to make it semi secure
-func MakeAES256Key(passphrase string, salt []byte) (*AES256Key, error) {
+func MakeKey(passphrase string, salt []byte) (*Key, error) {
 	var b []byte = []byte(passphrase)
 	var err error
 
@@ -35,10 +35,10 @@ func MakeAES256Key(passphrase string, salt []byte) (*AES256Key, error) {
 		return nil, err
 	}
 
-	return NewAES256Key(key, salt), nil
+	return NewKey(key, salt), nil
 }
 
 // Generate a new AES256 key from a key and salt
-func NewAES256Key(key, salt []byte) *AES256Key {
-	return &AES256Key{key, salt}
+func NewKey(key, salt []byte) *Key {
+	return &Key{key, salt}
 }
